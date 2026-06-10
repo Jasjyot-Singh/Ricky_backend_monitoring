@@ -77,7 +77,9 @@ public class DeviceService {
                 Map<String, Object> entry = new HashMap<>();
                 
                 String timestampStr = root.path("timestamp").asText();
-                entry.put("timestamp", timestampStr.isEmpty() ? log.getReceivedAt().toString() : timestampStr);
+                entry.put("timestamp", (timestampStr.isEmpty() || "null".equals(timestampStr)) 
+                        ? log.getReceivedAt().toString() 
+                        : timestampStr);
                 
                 entry.put("batteryPercentage", root.path("battery").path("percentage").asInt());
                 entry.put("cpuUsage", root.path("system").path("cpu").asInt());
