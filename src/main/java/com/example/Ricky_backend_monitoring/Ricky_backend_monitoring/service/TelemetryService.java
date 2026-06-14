@@ -323,12 +323,6 @@ public class TelemetryService {
     }
 
     private void resolveAlert(String deviceId, String type) {
-        Optional<Alert> existing = alertRepository.findFirstByDeviceIdAndTypeAndResolvedFalseOrderByCreatedAtDesc(deviceId, type);
-        if (existing.isPresent()) {
-            Alert alert = existing.get();
-            alert.setResolved(true);
-            alert.setResolvedAt(LocalDateTime.now());
-            alertRepository.save(alert);
-        }
+        // No-op: Alerts must be resolved only and only manually by the operator
     }
 }
