@@ -89,6 +89,17 @@ public class DeviceController {
         return ResponseEntity.ok(deviceService.getTelemetryHistory(deviceId));
     }
 
+    @GetMapping("/{deviceId}/telemetry-logs")
+    public ResponseEntity<List<Map<String, Object>>> getTelemetryLogs(
+            @PathVariable("deviceId") String deviceId,
+            @RequestParam("fromDate") String fromDateStr,
+            @RequestParam("toDate") String toDateStr) {
+        
+        LocalDateTime fromDate = LocalDateTime.parse(fromDateStr, DateTimeFormatter.ISO_DATE_TIME);
+        LocalDateTime toDate = LocalDateTime.parse(toDateStr, DateTimeFormatter.ISO_DATE_TIME);
+        return ResponseEntity.ok(deviceService.getTelemetryLogsForDate(deviceId, fromDate, toDate));
+    }
+
     @GetMapping("/{deviceId}/health")
     public ResponseEntity<Map<String, Object>> getHealth(@PathVariable("deviceId") String deviceId) {
         return deviceService.getHealth(deviceId)

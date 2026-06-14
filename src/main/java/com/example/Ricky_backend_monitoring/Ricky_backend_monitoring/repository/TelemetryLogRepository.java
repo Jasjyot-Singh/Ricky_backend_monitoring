@@ -15,4 +15,11 @@ public interface TelemetryLogRepository extends JpaRepository<TelemetryLog, Long
 
     @Query("SELECT tl FROM TelemetryLog tl WHERE tl.deviceId = :deviceId ORDER BY tl.receivedAt DESC")
     List<TelemetryLog> findLatestLogs(@Param("deviceId") String deviceId, Pageable pageable);
+
+    @Query("SELECT tl FROM TelemetryLog tl WHERE tl.deviceId = :deviceId AND tl.receivedAt >= :start AND tl.receivedAt <= :end ORDER BY tl.receivedAt ASC")
+    List<TelemetryLog> findLogsByDateRange(
+        @Param("deviceId") String deviceId,
+        @Param("start") java.time.LocalDateTime start,
+        @Param("end") java.time.LocalDateTime end
+    );
 }

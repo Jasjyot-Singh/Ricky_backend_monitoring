@@ -93,6 +93,30 @@ public class DeviceService {
         return history;
     }
 
+    public List<Map<String, Object>> getTelemetryLogsForDate(String deviceId, LocalDateTime start, LocalDateTime end) {
+        List<TelemetryLog> logs = telemetryLogRepository.findLogsByDateRange(deviceId, start, end);
+        List<Map<String, Object>> result = new ArrayList<>();
+        for (TelemetryLog log : logs) {
+            try {
+                JsonNode root = objectMapper.readTree(log.getPayloadJson());
+                Map<String, Object> entry = new HashMap<>();
+                
+                String timestampStr = root.path("timestamp").asText();
+                entry.put("timestamp", (timestampStr.isEmpty() || "null".equals(timestampStr)) 
+                        ? log.getReceivedAt().toString() 
+                        : timestampStr);
+                
+                boolean charging = root.path("battery").path("charging").asBoolean();
+                entry.put("charging", charging);
+                
+                result.add(entry);
+            } catch (Exception e) {
+                // Skip malformed
+            }
+        }
+        return result;
+    }
+
     public Optional<Map<String, Object>> getHealth(String deviceId) {
         Optional<LiveStatus> lsOpt = liveStatusRepository.findById(deviceId);
         if (lsOpt.isEmpty()) {
