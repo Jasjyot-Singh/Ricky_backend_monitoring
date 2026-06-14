@@ -198,7 +198,7 @@ public class TelemetryService {
                 event.setResolvedAt(now);
                 sosEventRepository.save(event);
             }
-            resolveAlert(payload.getDeviceId(), "SOS");
+            // resolveAlert(payload.getDeviceId(), "SOS"); // Disabled to enforce manual operator resolution
         }
 
         // 6. Handle System Metrics & Hardware Alerts
@@ -323,6 +323,12 @@ public class TelemetryService {
     }
 
     private void resolveAlert(String deviceId, String type) {
-        // No-op: Alerts must be resolved only and only manually by the operator
+        Optional<Alert> existing = alertRepository.findFirstByDeviceIdAndTypeAndResolvedFalseOrderByCreatedAtDesc(deviceId, type);
+        if (existing.isPresent()) {
+            Alert alert = existing.get();
+            alert.setResolved(true);
+            alert.setResolvedAt(LocalDateTime.now());
+            alertRepository.save(alert);
+        }
     }
 }
